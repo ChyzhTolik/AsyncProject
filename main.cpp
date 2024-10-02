@@ -1,5 +1,6 @@
 #include <iostream>
 
-int main(int, char**){
+int main()
+{
     std::cout << "Hello, from AsyncProject!\n";
 }
