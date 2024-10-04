@@ -6,6 +6,7 @@ project(ServerLib)
 set(HEADERS 
     Common/serverlib_headers.hpp
     Common/net_common.hpp
+    Common/tsqueue.hpp
 )
 set(SOURCES
     Server/Server.cpp
