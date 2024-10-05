@@ -1,33 +1,46 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.21.1)
 
+option(LINK_INSIGHT "Link Qt Insight Tracker library" ON)
+option(BUILD_QDS_COMPONENTS "Build design studio components" ON)
 
-project(TestQML LANGUAGES CXX)
+project(TestQMLApp LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STA ON)
 
-set(HEADERS
-    Firefox.hpp
-    Userinteractor.hpp
-    InternetExplorer.hpp
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Qml Quick)
+
+if (Qt6_VERSION VERSION_GREATER_EQUAL 6.3)
+    qt_standard_project_setup()
+endif()
+
+qt_add_executable(TestQMLApp src/main.cpp)
+
+qt_add_resources(TestQMLApp "configuration"
+    PREFIX "/"
+    FILES
+        qtquickcontrols2.conf
 )
 
-set(SOURCES
-    main.cpp
-    Firefox.cpp
-    Userinteractor.cpp
-    InternetExplorer.cpp
+target_link_libraries(TestQMLApp PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Qml
+    Qt6::Quick
 )
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
+if (BUILD_QDS_COMPONENTS)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/qmlcomponents)
+endif()
 
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES}
+include(${CMAKE_CURRENT_SOURCE_DIR}/qmlmodules)
 
-     )
+if (LINK_INSIGHT)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/insight)
+endif ()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
+include(GNUInstallDirs)
+install(TARGETS TestQMLApp
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
