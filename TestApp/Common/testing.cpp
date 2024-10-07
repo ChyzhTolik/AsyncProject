@@ -156,4 +156,29 @@ namespace Test
         logger.test_swap();
     }
 
+    void long_time_worker(int id)
+    {
+        std::cout<<"Start worker"<<std::to_string(id)<<std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        std::cout<<"Stopped worker"<<std::to_string(id)<<std::endl;
+    }
+
+    void test_thread_pool()
+    {
+        auto start = std::chrono::steady_clock::now();
+        {
+            AP::ThreadPool thread_pool(4);
+
+
+            for (size_t i = 0; i < 4; i++)
+            {
+                thread_pool.enqueue(long_time_worker,i);
+            }
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
+    }
+
 } // namespace Test

@@ -27,5 +27,6 @@ namespace Test
 
     void test_logger();
     void test_logger_swap();
+    void test_thread_pool();
 
 } // namespace Test
