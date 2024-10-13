@@ -9,6 +9,7 @@ namespace AP
         for (size_t i = 0; i < num_of_threads; i++) 
         {
             // Add worker thread to workers
+            m_workers.reserve(num_of_threads);
             m_workers.emplace_back(
                 [this] 
                 {

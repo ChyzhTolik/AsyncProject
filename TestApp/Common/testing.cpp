@@ -156,11 +156,14 @@ namespace Test
         logger.test_swap();
     }
 
+    std::mutex worker_mutex;
     void long_time_worker(int id)
     {
-        std::cout<<"Start worker"<<std::to_string(id)<<std::endl;
+        std::unique_lock lock(worker_mutex, std::defer_lock);
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-        std::cout<<"Stopped worker"<<std::to_string(id)<<std::endl;
+        lock.lock();
+        std::cout<<"Stopped worker "<<id<<" on thread "<<std::this_thread::get_id()<<std::endl;
+        lock.unlock();
     }
 
     void test_thread_pool()
@@ -169,10 +172,17 @@ namespace Test
         {
             AP::ThreadPool thread_pool(4);
 
-
-            for (size_t i = 0; i < 4; i++)
+            for (size_t i = 0; i < 6; i++)
             {
-                thread_pool.enqueue(long_time_worker,i);
+                try
+                {
+                    auto future = thread_pool.enqueue(long_time_worker,i);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+                
             }
         }
 
